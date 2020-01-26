@@ -29,28 +29,28 @@ export class TeaCategoriesService {
   }
 
   async getAll(): Promise<Array<TeaCategory>> {
-    const votes: Array<TeaCategory> = [];
+    const cats: Array<TeaCategory> = [];
     await this.readyPromise;
     await this.handle.transaction(tx =>
       tx.executeSql('SELECT * FROM TeaCategories ORDER BY name', [], (_t, r) => {
         for (let i = 0; i < r.rows.length; i++) {
-          votes.push(r.rows.item(i));
+          cats.push(r.rows.item(i));
         }
       })
     );
-    return votes;
+    return cats;
   }
 
   async get(id: string): Promise<TeaCategory> {
     let cat: TeaCategory = null;
     await this.readyPromise;
-    await this.handle.transaction(tx =>
+    await this.handle.transaction(tx => {
       tx.executeSql('SELECT * FROM TeaCategories WHERE id = ? ORDER BY name', [id], (_t, r) => {
-        if (r.rows.len) {
-          cat = { ...r.rows.item[0] };
+        if (r.rows.length) {
+          cat = { ...r.rows.item(0) };
         }
       })
-    );
+    });
     return cat;
   }
 
@@ -67,15 +67,15 @@ export class TeaCategoriesService {
   private async add(category: TeaCategory): Promise<TeaCategory> {
     await this.readyPromise;
     const cat = { ...category };
-    await this.handle.transaction(tx => {
+    await this.handle.transaction(tx  => {
       tx.executeSql('SELECT COALESCE(MAX(id), 0) + 1 AS newId FROM TeaCategories', [], (_t, r) => {
         cat.id = r.rows.item(0).newId;
+        tx.executeSql(
+          'INSERT INTO TeaCategories (id, name, description) VALUES (?, ?, ?)',
+          [cat.id, cat.name, cat.description],
+          () => {}
+        );
       });
-      tx.executeSql(
-        'INSERT INTO TeaCategories (id, name, description) VALUES (?, ?, ?)',
-        [cat.id, cat.name, cat.description],
-        () => {}
-      );
     });
     this.changedSubject.next();
     return cat;
@@ -97,7 +97,6 @@ export class TeaCategoriesService {
   private async initializeDatabase(): Promise<void> {
     await this.platform.ready();
     await this.open();
-    console.log('after open', this.handle);
     await this.handle.transaction(tx => {
       this.createTables(tx);
     });
@@ -109,11 +108,10 @@ export class TeaCategoriesService {
       name: 'teaisforme.db',
       location: 'default'
     });
-    console.log('datbase is open', this.handle);
   }
 
   private createTables(transaction: DbTransaction): void {
-    const id = { name: 'id', type: 'TEXT PRIMARY KEY' };
+    const id = { name: 'id', type: 'INTEGER PRIMARY KEY' };
     const name = { name: 'name', type: 'TEXT' };
     const description = { name: 'description', type: 'TEXT' };
     transaction.executeSql(this.createTableSQL('TeaCategories', [id, name, description]));
