@@ -1,112 +1,136 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 
-import {
-  CordovaEngine,
-  Database,
-  DatabaseConfiguration,
-  DataSource,
-  IonicCBL,
-  Meta,
-  MutableDocument,
-  Ordering,
-  QueryBuilder,
-  SelectResult
-} from '@ionic-enterprise/offline-storage';
-import { TeaCategory } from '../../models/tea-category';
+import { SQLite, SQLiteObject, DbTransaction } from '@ionic-enterprise/offline-storage/ngx';
+import { TeaCategory } from '@app/models';
+import { Platform } from '@ionic/angular';
+
+interface Column {
+  name: string;
+  type: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class TeaCategoriesService {
-  private database: Database;
+  private handle: SQLiteObject;
   private readyPromise: Promise<void>;
+  private isReady = false;
   private changedSubject: BehaviorSubject<void>;
 
   get changed(): Observable<void> {
     return this.changedSubject.asObservable();
   }
 
-  constructor() {
+  constructor(private platform: Platform, private sqlite: SQLite) {
     this.changedSubject = new BehaviorSubject(null);
     this.readyPromise = this.initializeDatabase();
   }
 
   async getAll(): Promise<Array<TeaCategory>> {
+    const votes: Array<TeaCategory> = [];
     await this.readyPromise;
-    const query = QueryBuilder.select(
-      SelectResult.property('name'),
-      SelectResult.property('description'),
-      SelectResult.expression(Meta.id)
-    )
-      .from(DataSource.database(this.database))
-      .orderBy(Ordering.property('name'));
-    const ret = await query.execute();
-    const res = await ret.allResults();
-    return res.map(t => {
-      return {
-        id: t.id,
-        name: t.name,
-        description: t.description
-      };
-    });
+    await this.handle.transaction(tx =>
+      tx.executeSql('SELECT * FROM TeaCategories ORDER BY name', [], (_t, r) => {
+        for (let i = 0; i < r.rows.length; i++) {
+          votes.push(r.rows.item(i));
+        }
+      })
+    );
+    return votes;
   }
 
   async get(id: string): Promise<TeaCategory> {
+    let cat: TeaCategory = null;
     await this.readyPromise;
-    const d = await this.database.getDocument(id);
-    const dict = d.toDictionary();
-    return {
-      id: d.getId(),
-      name: dict.name,
-      description: dict.description
-    };
+    await this.handle.transaction(tx =>
+      tx.executeSql('SELECT * FROM TeaCategories WHERE id = ? ORDER BY name', [id], (_t, r) => {
+        if (r.rows.len) {
+          cat = { ...r.rows.item[0] };
+        }
+      })
+    );
+    return cat;
   }
 
-  async save(category: TeaCategory): Promise<void> {
+  async save(category: TeaCategory): Promise<TeaCategory> {
     return category.id ? this.update(category) : this.add(category);
   }
 
   async delete(id: string): Promise<void> {
     await this.readyPromise;
-    const d = await this.database.getDocument(id);
-    return this.database.deleteDocument(d);
+    await this.handle.transaction(tx => tx.executeSql('DELETE FROM TeaCategories WHERE id = ?', [id], () => {}));
+    this.changedSubject.next();
   }
 
-  onChange(cb: () => void) {
-    this.readyPromise.then(() => this.database.addChangeListener(cb));
-  }
-
-  private async add(category: TeaCategory): Promise<void> {
+  private async add(category: TeaCategory): Promise<TeaCategory> {
     await this.readyPromise;
-    const doc = new MutableDocument().setString('name', category.name).setString('description', category.description);
-    return this.database.save(doc);
+    const cat = { ...category };
+    await this.handle.transaction(tx => {
+      tx.executeSql('SELECT COALESCE(MAX(id), 0) + 1 AS newId FROM TeaCategories', [], (_t, r) => {
+        cat.id = r.rows.item(0).newId;
+      });
+      tx.executeSql(
+        'INSERT INTO TeaCategories (id, name, description) VALUES (?, ?, ?)',
+        [cat.id, cat.name, cat.description],
+        () => {}
+      );
+    });
+    this.changedSubject.next();
+    return cat;
   }
 
-  private async update(category: TeaCategory): Promise<void> {
+  private async update(category: TeaCategory): Promise<TeaCategory> {
     await this.readyPromise;
-    const d = await this.database.getDocument(category.id);
-    const md = new MutableDocument(d.getId(), d.getSequence(), d.getData());
-    md.setString('name', category.name);
-    md.setString('description', category.description);
-    return this.database.save(md);
+    this.handle.transaction(tx => {
+      tx.executeSql(
+        'UPDATE TeaCategories SET name = ?, description = ? WHERE id = ?',
+        [category.name, category.description, category.id],
+        () => {}
+      );
+    });
+    this.changedSubject.next();
+    return category;
   }
 
   private async initializeDatabase(): Promise<void> {
-    return new Promise(resolve => {
-      IonicCBL.onReady(async () => {
-        const config = new DatabaseConfiguration();
-        config.setEncryptionKey('8e31f8f6-60bd-482a-9c70-69855dd02c38');
-        this.database = new Database('teacatgories', config);
-        this.database.setEngine(
-          new CordovaEngine({
-            allResultsChunkSize: 9999
-          })
-        );
-        await this.database.open();
-        this.database.addChangeListener(() => this.changedSubject.next());
-        resolve();
-      });
+    await this.platform.ready();
+    await this.open();
+    console.log('after open', this.handle);
+    await this.handle.transaction(tx => {
+      this.createTables(tx);
     });
+    this.isReady = true;
+  }
+
+  private async open(): Promise<void> {
+    this.handle = await this.sqlite.create({
+      name: 'teaisforme.db',
+      location: 'default'
+    });
+    console.log('datbase is open', this.handle);
+  }
+
+  private createTables(transaction: DbTransaction): void {
+    const id = { name: 'id', type: 'TEXT PRIMARY KEY' };
+    const name = { name: 'name', type: 'TEXT' };
+    const description = { name: 'description', type: 'TEXT' };
+    transaction.executeSql(this.createTableSQL('TeaCategories', [id, name, description]));
+  }
+
+  private createTableSQL(name: string, columns: Array<Column>): string {
+    let cols = '';
+    columns.forEach((c, i) => {
+      cols += `${i ? ', ' : ''}${c.name} ${c.type}`;
+    });
+    return `CREATE TABLE IF NOT EXISTS ${name} (${cols})`;
+  }
+
+  private async ready(): Promise<boolean> {
+    if (!this.isReady) {
+      await this.readyPromise;
+    }
+    return true;
   }
 }
