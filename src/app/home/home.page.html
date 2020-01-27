@@ -15,14 +15,14 @@
 
   <ion-list>
     <ion-item-sliding *ngFor="let cat of categories$ | async">
-      <ion-item (click)="editTeaCategory(cat.id)">
+      <ion-item (click)="editTeaCategory(cat)">
         <ion-label>
           <div class="name">{{ cat.name }}</div>
           <div class="description">{{ cat.description }}</div>
         </ion-label>
       </ion-item>
       <ion-item-options>
-        <ion-item-option color="danger" (click)="removeTeaCategory(cat.id)">
+        <ion-item-option color="danger" (click)="removeTeaCategory(cat)">
           Delete
         </ion-item-option>
       </ion-item-options>
