@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 
-import { TeaCategoriesService } from '../services/tea-categories/tea-categories.service';
+import { TeaCategoriesService } from '@app/services';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({

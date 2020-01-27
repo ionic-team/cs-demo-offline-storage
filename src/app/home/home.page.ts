@@ -1,10 +1,10 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavController, AlertController } from '@ionic/angular';
-
-import { TeaCategory } from '../models/tea-category';
-import { TeaCategoriesService } from '../services/tea-categories/tea-categories.service';
 import { from, Observable } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
+
+import { TeaCategory } from '@app/models';
+import { TeaCategoriesService } from '@app/services';
 
 @Component({
   selector: 'app-home',
