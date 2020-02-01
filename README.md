@@ -18,10 +18,20 @@ At this point you should be able to sideload the application on a device or run 
 
 ## General Architecture
 
-### Tea Categories Service
+### Services
 
-This services handles all of the CRUD operations. The service communicates with callers by passing the tea categories as regular typed TypeScript models rather than database objects. The reason for this is so the storage mechanism can easily be changed without affecting the callers.
+#### Database
+
+The database service is concerned with initializing the database and creating or modifying the schema as needed. A more complex app containing multiple databases should have multiple "database" services, one for each database. In that case, some routines from this service will likely need to be abstracted into a "database utility" service to avoid replication of logic.
+
+#### Other Services
+
+Each of the other services in this application handle the CRUD operations for ONE type of data entity within the application domain. Note that this does not have to be a table-by-table grouping. It can be, but it does not have to be. A logical entity within the application domain could easily span multiple tables.
+
+### Store
+
+This application uses an NgRX store to manage the state of the application. The store uses effects to communicate with the databases via the services mentioned above.
 
 ### Pages
 
-The pages know nothing about how the data is stored. The logic in the pages is only concerned with how the data is displayed and manipulated on the pages themselves. The end result being that if the way data is stored chanages the logic in the pages does not need to be touched.
+The pages know nothing about how the data is stored. They get the current state from the store and dispatch actions to the store when required.  This allows them to focus on the concerns of displaying the information to the user and reacting to interaction from the user.
