@@ -8,15 +8,7 @@ import { DatabaseService } from '@app/services/database/database.service';
   providedIn: 'root'
 })
 export class TeaCategoriesService {
-  private changedSubject: BehaviorSubject<void>;
-
-  get changed(): Observable<void> {
-    return this.changedSubject.asObservable();
-  }
-
-  constructor(private database: DatabaseService) {
-    this.changedSubject = new BehaviorSubject(null);
-  }
+  constructor(private database: DatabaseService) { }
 
   async getAll(): Promise<Array<TeaCategory>> {
     const cats: Array<TeaCategory> = [];
@@ -53,7 +45,6 @@ export class TeaCategoriesService {
   async delete(id: number): Promise<void> {
     await this.database.ready();
     await this.database.handle.transaction(tx => tx.executeSql('DELETE FROM TeaCategories WHERE id = ?', [id], () => {}));
-    this.changedSubject.next();
   }
 
   private async add(category: TeaCategory): Promise<TeaCategory> {
@@ -70,7 +61,6 @@ export class TeaCategoriesService {
         );
       });
     });
-    this.changedSubject.next();
     return cat;
   }
 
@@ -83,7 +73,6 @@ export class TeaCategoriesService {
         () => {}
       );
     });
-    this.changedSubject.next();
     return category;
   }
 }
