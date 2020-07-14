@@ -26,9 +26,9 @@ describe('TeaCategoryEditorPage', () => {
         { provide: DatabaseService, useFactory: createDatabaseServiceMock },
         { provide: Location, useValue: {} },
         { provide: NavController, useFactory: createNavControllerMock },
-        provideMockStore<State>()
+        provideMockStore<State>(),
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
   }));
 

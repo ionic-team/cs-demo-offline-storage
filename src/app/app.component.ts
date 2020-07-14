@@ -9,14 +9,14 @@ import { load as loadTeaCategories } from './store/actions/tea-category.actions'
 
 @Component({
   selector: 'app-root',
-  templateUrl: 'app.component.html'
+  templateUrl: 'app.component.html',
 })
 export class AppComponent {
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    private store: Store<State>
+    private store: Store<State>,
   ) {
     this.initializeApp();
   }

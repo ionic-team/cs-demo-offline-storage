@@ -5,21 +5,25 @@ import { TeaCategory } from '@app/models';
 import { DatabaseService } from '@app/services/database/database.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TeaCategoriesService {
-  constructor(private database: DatabaseService) { }
+  constructor(private database: DatabaseService) {}
 
   async getAll(): Promise<Array<TeaCategory>> {
     const cats: Array<TeaCategory> = [];
     await this.database.ready();
     await this.database.handle.transaction(tx =>
       // tslint:disable-next-line:variable-name
-      tx.executeSql('SELECT * FROM TeaCategories ORDER BY name', [], (_t, r) => {
-        for (let i = 0; i < r.rows.length; i++) {
-          cats.push(r.rows.item(i));
-        }
-      })
+      tx.executeSql(
+        'SELECT * FROM TeaCategories ORDER BY name',
+        [],
+        (_t, r) => {
+          for (let i = 0; i < r.rows.length; i++) {
+            cats.push(r.rows.item(i));
+          }
+        },
+      ),
     );
     return cats;
   }
@@ -29,11 +33,15 @@ export class TeaCategoriesService {
     await this.database.ready();
     await this.database.handle.transaction(tx => {
       // tslint:disable-next-line:variable-name
-      tx.executeSql('SELECT * FROM TeaCategories WHERE id = ?', [id], (_t, r) => {
-        if (r.rows.length) {
-          cat = { ...r.rows.item(0) };
-        }
-      });
+      tx.executeSql(
+        'SELECT * FROM TeaCategories WHERE id = ?',
+        [id],
+        (_t, r) => {
+          if (r.rows.length) {
+            cat = { ...r.rows.item(0) };
+          }
+        },
+      );
     });
     return cat;
   }
@@ -44,22 +52,28 @@ export class TeaCategoriesService {
 
   async delete(id: number): Promise<void> {
     await this.database.ready();
-    await this.database.handle.transaction(tx => tx.executeSql('DELETE FROM TeaCategories WHERE id = ?', [id], () => {}));
+    await this.database.handle.transaction(tx =>
+      tx.executeSql('DELETE FROM TeaCategories WHERE id = ?', [id], () => {}),
+    );
   }
 
   private async add(category: TeaCategory): Promise<TeaCategory> {
     await this.database.ready();
     const cat = { ...category };
-    await this.database.handle.transaction(tx  => {
+    await this.database.handle.transaction(tx => {
       // tslint:disable-next-line:variable-name
-      tx.executeSql('SELECT COALESCE(MAX(id), 0) + 1 AS newId FROM TeaCategories', [], (_t, r) => {
-        cat.id = r.rows.item(0).newId;
-        tx.executeSql(
-          'INSERT INTO TeaCategories (id, name, description) VALUES (?, ?, ?)',
-          [cat.id, cat.name, cat.description],
-          () => {}
-        );
-      });
+      tx.executeSql(
+        'SELECT COALESCE(MAX(id), 0) + 1 AS newId FROM TeaCategories',
+        [],
+        (_t, r) => {
+          cat.id = r.rows.item(0).newId;
+          tx.executeSql(
+            'INSERT INTO TeaCategories (id, name, description) VALUES (?, ?, ?)',
+            [cat.id, cat.name, cat.description],
+            () => {},
+          );
+        },
+      );
     });
     return cat;
   }
@@ -70,7 +84,7 @@ export class TeaCategoriesService {
       tx.executeSql(
         'UPDATE TeaCategories SET name = ?, description = ? WHERE id = ?',
         [category.name, category.description, category.id],
-        () => {}
+        () => {},
       );
     });
     return category;

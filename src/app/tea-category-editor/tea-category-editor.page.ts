@@ -10,7 +10,7 @@ import { create, update } from '@app/store/actions/tea-category.actions';
 @Component({
   selector: 'app-tea-category-editor',
   templateUrl: './tea-category-editor.page.html',
-  styleUrls: ['./tea-category-editor.page.scss']
+  styleUrls: ['./tea-category-editor.page.scss'],
 })
 export class TeaCategoryEditorPage implements OnInit {
   private id: number;
@@ -19,7 +19,11 @@ export class TeaCategoryEditorPage implements OnInit {
   description: string;
   title: string;
 
-  constructor(private route: ActivatedRoute, private navController: NavController, private store: Store<State>) {}
+  constructor(
+    private route: ActivatedRoute,
+    private navController: NavController,
+    private store: Store<State>,
+  ) {}
 
   async ngOnInit() {
     const id = this.idParam();
@@ -32,9 +36,25 @@ export class TeaCategoryEditorPage implements OnInit {
 
   async save() {
     if (this.id) {
-      this.store.dispatch(update({ teaCategory: { id: this.id, name: this.name, description: this.description } }));
+      this.store.dispatch(
+        update({
+          teaCategory: {
+            id: this.id,
+            name: this.name,
+            description: this.description,
+          },
+        }),
+      );
     } else {
-      this.store.dispatch(create({ teaCategory: { id: this.id, name: this.name, description: this.description } }));
+      this.store.dispatch(
+        create({
+          teaCategory: {
+            id: this.id,
+            name: this.name,
+            description: this.description,
+          },
+        }),
+      );
     }
     this.navController.back();
   }

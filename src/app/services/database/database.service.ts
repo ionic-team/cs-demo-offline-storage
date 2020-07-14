@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Platform } from '@ionic/angular';
 
-import { DbTransaction, SQLite, SQLiteObject } from '@ionic-enterprise/offline-storage/ngx';
+import {
+  DbTransaction,
+  SQLite,
+  SQLiteObject,
+} from '@ionic-enterprise/offline-storage/ngx';
 
 interface Column {
   name: string;
@@ -9,7 +13,7 @@ interface Column {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DatabaseService {
   public handle: SQLiteObject;
@@ -43,7 +47,7 @@ export class DatabaseService {
   private async open(): Promise<void> {
     this.handle = await this.sqlite.create({
       name: 'teaisforme.db',
-      location: 'default'
+      location: 'default',
     });
   }
 
@@ -52,14 +56,15 @@ export class DatabaseService {
     const name = { name: 'name', type: 'TEXT' };
     const description = { name: 'description', type: 'TEXT' };
     transaction.executeSql(
-      this.createTableSQL('TeaCategories', [id, name, description])
+      this.createTableSQL('TeaCategories', [id, name, description]),
     );
     transaction.executeSql(
       this.createTableSQL('Teas', [
         id,
-        name, description,
-        { name: 'teaCategoryRid', type: 'INTEGER' }
-      ])
+        name,
+        description,
+        { name: 'teaCategoryRid', type: 'INTEGER' },
+      ]),
     );
   }
 

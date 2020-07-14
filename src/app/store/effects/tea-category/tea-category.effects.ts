@@ -10,7 +10,10 @@ import { TeaCategory } from '@app/models';
 
 @Injectable()
 export class TeaCategoryEffects {
-  constructor(private actions$: Actions, private teaCategoryService: TeaCategoriesService) {}
+  constructor(
+    private actions$: Actions,
+    private teaCategoryService: TeaCategoriesService,
+  ) {}
 
   load$ = createEffect(() =>
     this.actions$.pipe(
@@ -18,10 +21,10 @@ export class TeaCategoryEffects {
       mergeMap(() =>
         from(this.teaCategoryService.getAll()).pipe(
           map(cats => teaCategoryActions.loadSuccess({ teaCategories: cats })),
-          catchError(error => of(teaCategoryActions.loadFailure({ error })))
-        )
-      )
-    )
+          catchError(error => of(teaCategoryActions.loadFailure({ error }))),
+        ),
+      ),
+    ),
   );
 
   create$ = createEffect(() =>
@@ -30,10 +33,10 @@ export class TeaCategoryEffects {
       mergeMap(action =>
         from(this.teaCategoryService.save(action.teaCategory)).pipe(
           map(cat => teaCategoryActions.createSuccess({ teaCategory: cat })),
-          catchError(error => of(teaCategoryActions.createFailure({ error })))
-        )
-      )
-    )
+          catchError(error => of(teaCategoryActions.createFailure({ error }))),
+        ),
+      ),
+    ),
   );
 
   update$ = createEffect(() =>
@@ -42,10 +45,10 @@ export class TeaCategoryEffects {
       mergeMap(action =>
         from(this.teaCategoryService.save(action.teaCategory)).pipe(
           map(cat => teaCategoryActions.updateSuccess({ teaCategory: cat })),
-          catchError(error => of(teaCategoryActions.updateFailure({ error })))
-        )
-      )
-    )
+          catchError(error => of(teaCategoryActions.updateFailure({ error }))),
+        ),
+      ),
+    ),
   );
 
   delete$ = createEffect(() =>
@@ -53,10 +56,14 @@ export class TeaCategoryEffects {
       ofType(teaCategoryActions.remove),
       mergeMap(action =>
         from(this.teaCategoryService.delete(action.teaCategory.id)).pipe(
-          map(() => teaCategoryActions.removeSuccess({ teaCategory: action.teaCategory })),
-          catchError(error => of(teaCategoryActions.removeFailure({ error })))
-        )
-      )
-    )
+          map(() =>
+            teaCategoryActions.removeSuccess({
+              teaCategory: action.teaCategory,
+            }),
+          ),
+          catchError(error => of(teaCategoryActions.removeFailure({ error }))),
+        ),
+      ),
+    ),
   );
 }

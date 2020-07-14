@@ -26,12 +26,17 @@ import { TeaCategoryEffects } from '@app/store/effects';
       metaReducers,
       runtimeChecks: {
         strictStateImmutability: true,
-        strictActionImmutability: true
-      }
+        strictActionImmutability: true,
+      },
     }),
-    EffectsModule.forRoot([TeaCategoryEffects])
+    EffectsModule.forRoot([TeaCategoryEffects]),
   ],
-  providers: [SplashScreen, SQLite, StatusBar, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
-  bootstrap: [AppComponent]
+  providers: [
+    SplashScreen,
+    SQLite,
+    StatusBar,
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+  ],
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

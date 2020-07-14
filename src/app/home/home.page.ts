@@ -12,7 +12,7 @@ import { remove } from '@app/store/actions/tea-category.actions';
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomePage implements OnInit {
   databaseName: string;
@@ -22,7 +22,7 @@ export class HomePage implements OnInit {
   constructor(
     private alertController: AlertController,
     private navController: NavController,
-    private store: Store<State>
+    private store: Store<State>,
   ) {}
 
   ngOnInit() {
@@ -41,12 +41,12 @@ export class HomePage implements OnInit {
     const alert = await this.alertController.create({
       header: 'Confirm Delete',
       message: 'Are you sure you want to permanently remove this category?',
-      buttons: [{ text: 'Yes' }, { text: 'No', role: 'cancel' }]
+      buttons: [{ text: 'Yes' }, { text: 'No', role: 'cancel' }],
     });
     alert.present();
     const res = await alert.onDidDismiss();
     if (res.role !== 'cancel') {
-      this.store.dispatch(remove({teaCategory}));
+      this.store.dispatch(remove({ teaCategory }));
     }
   }
 }

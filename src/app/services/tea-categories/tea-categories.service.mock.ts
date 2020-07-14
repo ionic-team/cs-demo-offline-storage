@@ -3,6 +3,6 @@ export function createTeaCategoriesServiceMock() {
     getAll: Promise.resolve([]),
     get: Promise.resolve(),
     save: Promise.resolve(),
-    delete: Promise.resolve()
+    delete: Promise.resolve(),
   });
 }

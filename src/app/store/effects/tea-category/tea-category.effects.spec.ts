@@ -17,9 +17,12 @@ describe('tea category effects', () => {
     TestBed.configureTestingModule({
       providers: [
         TeaCategoryEffects,
-        { provide: TeaCategoriesService, useFactory: createTeaCategoriesServiceMock },
-        provideMockActions(() => actions$)
-      ]
+        {
+          provide: TeaCategoriesService,
+          useFactory: createTeaCategoriesServiceMock,
+        },
+        provideMockActions(() => actions$),
+      ],
     });
 
     effects = TestBed.get<TeaCategoryEffects>(TeaCategoryEffects);
@@ -39,7 +42,11 @@ describe('tea category effects', () => {
 
     it('only does this for the load action', () => {
       const service = TestBed.get(TeaCategoriesService);
-      actions$ = of(teaCategoryActions.create({ teaCategory: { id: 1, name: 'name', description: 'descr' } }));
+      actions$ = of(
+        teaCategoryActions.create({
+          teaCategory: { id: 1, name: 'name', description: 'descr' },
+        }),
+      );
       effects.load$.subscribe(() => {});
       expect(service.getAll).not.toHaveBeenCalled();
     });
@@ -50,8 +57,8 @@ describe('tea category effects', () => {
         Promise.resolve([
           { id: 1, name: 'first', description: 'the first type' },
           { id: 2, name: 'second', description: 'the second type' },
-          { id: 3, name: 'third', description: 'the third type' }
-        ])
+          { id: 3, name: 'third', description: 'the third type' },
+        ]),
       );
       actions$ = of(teaCategoryActions.load());
       effects.load$.subscribe(action => {
@@ -60,9 +67,9 @@ describe('tea category effects', () => {
             teaCategories: [
               { id: 1, name: 'first', description: 'the first type' },
               { id: 2, name: 'second', description: 'the second type' },
-              { id: 3, name: 'third', description: 'the third type' }
-            ]
-          })
+              { id: 3, name: 'third', description: 'the third type' },
+            ],
+          }),
         );
         done();
       });
@@ -70,10 +77,16 @@ describe('tea category effects', () => {
 
     it('handles errors', done => {
       const service = TestBed.get(TeaCategoriesService);
-      service.getAll.and.returnValue(Promise.reject(new Error('I am a failure')));
+      service.getAll.and.returnValue(
+        Promise.reject(new Error('I am a failure')),
+      );
       actions$ = of(teaCategoryActions.load());
       effects.load$.subscribe(action => {
-        expect(action).toEqual(teaCategoryActions.loadFailure({ error: new Error('I am a failure') }));
+        expect(action).toEqual(
+          teaCategoryActions.loadFailure({
+            error: new Error('I am a failure'),
+          }),
+        );
         done();
       });
     });
@@ -84,12 +97,18 @@ describe('tea category effects', () => {
       const service = TestBed.get(TeaCategoriesService);
       actions$ = of(
         teaCategoryActions.create({
-          teaCategory: { name: 'I am new here', description: 'I did not exist before today' }
-        })
+          teaCategory: {
+            name: 'I am new here',
+            description: 'I did not exist before today',
+          },
+        }),
       );
       effects.create$.subscribe(() => {});
       expect(service.save).toHaveBeenCalledTimes(1);
-      expect(service.save).toHaveBeenCalledWith({ name: 'I am new here', description: 'I did not exist before today' });
+      expect(service.save).toHaveBeenCalledWith({
+        name: 'I am new here',
+        description: 'I did not exist before today',
+      });
     });
 
     it('only does this for the create action', () => {
@@ -102,12 +121,19 @@ describe('tea category effects', () => {
     it('passes the returned tea catgory on to the create success', done => {
       const service = TestBed.get(TeaCategoriesService);
       service.save.and.returnValue(
-        Promise.resolve({ id: 42, name: 'I am new here', description: 'I did not exist before today' })
+        Promise.resolve({
+          id: 42,
+          name: 'I am new here',
+          description: 'I did not exist before today',
+        }),
       );
       actions$ = of(
         teaCategoryActions.create({
-          teaCategory: { name: 'I am new here', description: 'I did not exist before today' }
-        })
+          teaCategory: {
+            name: 'I am new here',
+            description: 'I did not exist before today',
+          },
+        }),
       );
       effects.create$.subscribe(action => {
         expect(action).toEqual(
@@ -115,9 +141,9 @@ describe('tea category effects', () => {
             teaCategory: {
               id: 42,
               name: 'I am new here',
-              description: 'I did not exist before today'
-            }
-          })
+              description: 'I did not exist before today',
+            },
+          }),
         );
         done();
       });
@@ -128,11 +154,18 @@ describe('tea category effects', () => {
       service.save.and.returnValue(Promise.reject(new Error('I am a failure')));
       actions$ = of(
         teaCategoryActions.create({
-          teaCategory: { name: 'I am new here', description: 'I did not exist before today' }
-        })
+          teaCategory: {
+            name: 'I am new here',
+            description: 'I did not exist before today',
+          },
+        }),
       );
       effects.create$.subscribe(action => {
-        expect(action).toEqual(teaCategoryActions.createFailure({ error: new Error('I am a failure') }));
+        expect(action).toEqual(
+          teaCategoryActions.createFailure({
+            error: new Error('I am a failure'),
+          }),
+        );
         done();
       });
     });
@@ -143,15 +176,19 @@ describe('tea category effects', () => {
       const service = TestBed.get(TeaCategoriesService);
       actions$ = of(
         teaCategoryActions.update({
-          teaCategory: { id: 42, name: 'I am a changed tea', description: 'I did not say this before' }
-        })
+          teaCategory: {
+            id: 42,
+            name: 'I am a changed tea',
+            description: 'I did not say this before',
+          },
+        }),
       );
       effects.update$.subscribe(() => {});
       expect(service.save).toHaveBeenCalledTimes(1);
       expect(service.save).toHaveBeenCalledWith({
         id: 42,
         name: 'I am a changed tea',
-        description: 'I did not say this before'
+        description: 'I did not say this before',
       });
     });
 
@@ -165,18 +202,30 @@ describe('tea category effects', () => {
     it('passes the tea catgory on to the update success', done => {
       const service = TestBed.get(TeaCategoriesService);
       service.save.and.returnValue(
-        Promise.resolve({ id: 42, name: 'I am a changed tea', description: 'I did not say this before' })
+        Promise.resolve({
+          id: 42,
+          name: 'I am a changed tea',
+          description: 'I did not say this before',
+        }),
       );
       actions$ = of(
         teaCategoryActions.update({
-          teaCategory: { id: 42, name: 'I am a changed tea', description: 'I did not say this before' }
-        })
+          teaCategory: {
+            id: 42,
+            name: 'I am a changed tea',
+            description: 'I did not say this before',
+          },
+        }),
       );
       effects.update$.subscribe(action => {
         expect(action).toEqual(
           teaCategoryActions.updateSuccess({
-            teaCategory: { id: 42, name: 'I am a changed tea', description: 'I did not say this before' }
-          })
+            teaCategory: {
+              id: 42,
+              name: 'I am a changed tea',
+              description: 'I did not say this before',
+            },
+          }),
         );
         done();
       });
@@ -187,11 +236,19 @@ describe('tea category effects', () => {
       service.save.and.returnValue(Promise.reject(new Error('I am a failure')));
       actions$ = of(
         teaCategoryActions.update({
-          teaCategory: { id: 42, name: 'I am a changed tea', description: 'I did not say this before' }
-        })
+          teaCategory: {
+            id: 42,
+            name: 'I am a changed tea',
+            description: 'I did not say this before',
+          },
+        }),
       );
       effects.update$.subscribe(action => {
-        expect(action).toEqual(teaCategoryActions.updateFailure({ error: new Error('I am a failure') }));
+        expect(action).toEqual(
+          teaCategoryActions.updateFailure({
+            error: new Error('I am a failure'),
+          }),
+        );
         done();
       });
     });
@@ -202,8 +259,12 @@ describe('tea category effects', () => {
       const service = TestBed.get(TeaCategoriesService);
       actions$ = of(
         teaCategoryActions.remove({
-          teaCategory: { id: 42, name: 'Delete Me', description: 'I am sad to be leaving you' }
-        })
+          teaCategory: {
+            id: 42,
+            name: 'Delete Me',
+            description: 'I am sad to be leaving you',
+          },
+        }),
       );
       effects.delete$.subscribe(() => {});
       expect(service.delete).toHaveBeenCalledTimes(1);
@@ -220,14 +281,22 @@ describe('tea category effects', () => {
     it('passes the tea catgory on to the delete success', done => {
       actions$ = of(
         teaCategoryActions.remove({
-          teaCategory: { id: 42, name: 'Delete Me', description: 'I am sad to be leaving you' }
-        })
+          teaCategory: {
+            id: 42,
+            name: 'Delete Me',
+            description: 'I am sad to be leaving you',
+          },
+        }),
       );
       effects.delete$.subscribe(action => {
         expect(action).toEqual(
           teaCategoryActions.removeSuccess({
-            teaCategory: { id: 42, name: 'Delete Me', description: 'I am sad to be leaving you' }
-          })
+            teaCategory: {
+              id: 42,
+              name: 'Delete Me',
+              description: 'I am sad to be leaving you',
+            },
+          }),
         );
         done();
       });
@@ -235,14 +304,24 @@ describe('tea category effects', () => {
 
     it('handles errors', done => {
       const service = TestBed.get(TeaCategoriesService);
-      service.delete.and.returnValue(Promise.reject(new Error('I am a failure')));
+      service.delete.and.returnValue(
+        Promise.reject(new Error('I am a failure')),
+      );
       actions$ = of(
         teaCategoryActions.remove({
-          teaCategory: { id: 42, name: 'Delete Me', description: 'I am sad to be leaving you' }
-        })
+          teaCategory: {
+            id: 42,
+            name: 'Delete Me',
+            description: 'I am sad to be leaving you',
+          },
+        }),
       );
       effects.delete$.subscribe(action => {
-        expect(action).toEqual(teaCategoryActions.removeFailure({ error: new Error('I am a failure') }));
+        expect(action).toEqual(
+          teaCategoryActions.removeFailure({
+            error: new Error('I am a failure'),
+          }),
+        );
         done();
       });
     });

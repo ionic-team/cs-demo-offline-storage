@@ -1,7 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 
 import { DatabaseService } from './database.service';
-import { createSQLiteMock, createSQLiteObjectMock, createPlatformMock } from '@test/mocks';
+import {
+  createSQLiteMock,
+  createSQLiteObjectMock,
+  createPlatformMock,
+} from '@test/mocks';
 import { SQLite } from '@ionic-enterprise/offline-storage/ngx';
 import { Platform } from '@ionic/angular';
 
@@ -16,8 +20,8 @@ describe('DatabaseService', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: Platform, useFactory: createPlatformMock },
-        { provide: SQLite, useValue: sqlite }
-      ]
+        { provide: SQLite, useValue: sqlite },
+      ],
     });
   });
 
@@ -42,7 +46,7 @@ describe('DatabaseService', () => {
       expect(sqlite.create).toHaveBeenCalledTimes(1);
       expect(sqlite.create).toHaveBeenCalledWith({
         name: 'teaisforme.db',
-        location: 'default'
+        location: 'default',
       });
     });
   });

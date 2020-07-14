@@ -18,11 +18,17 @@ describe('AppComponent', () => {
       declarations: [AppComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        { provide: StatusBar, useFactory: () => jasmine.createSpyObj('StatusBar', ['styleDefault']) },
-        { provide: SplashScreen, useFactory: () => jasmine.createSpyObj('SplashScreen', ['hide']) },
+        {
+          provide: StatusBar,
+          useFactory: () => jasmine.createSpyObj('StatusBar', ['styleDefault']),
+        },
+        {
+          provide: SplashScreen,
+          useFactory: () => jasmine.createSpyObj('SplashScreen', ['hide']),
+        },
         { provide: Platform, useFactory: createPlatformMock },
-        provideMockStore<State>()
-      ]
+        provideMockStore<State>(),
+      ],
     }).compileComponents();
   }));
 

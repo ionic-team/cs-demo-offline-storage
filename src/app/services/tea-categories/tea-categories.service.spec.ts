@@ -7,8 +7,10 @@ import { createDatabaseServiceMock } from '../database/database.service.mock';
 describe('TeaCategoriesService', () => {
   beforeEach(() =>
     TestBed.configureTestingModule({
-      providers: [{ provide: DatabaseService, useFactory: createDatabaseServiceMock }]
-    })
+      providers: [
+        { provide: DatabaseService, useFactory: createDatabaseServiceMock },
+      ],
+    }),
   );
 
   it('should be created', () => {

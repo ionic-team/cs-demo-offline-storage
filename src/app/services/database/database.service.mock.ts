@@ -1,10 +1,9 @@
 import { createSQLiteObjectMock } from '@test/mocks';
 import { deepCopy } from '@test/util';
 
-
 export function createDatabaseServiceMock() {
   const mock = jasmine.createSpyObj('DatabaseService', {
-    ready: Promise.resolve(true)
+    ready: Promise.resolve(true),
   });
   mock.handle = createSQLiteObjectMock();
   return mock;

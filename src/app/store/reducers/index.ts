@@ -8,7 +8,9 @@ export interface State {
 }
 
 export const reducers: ActionReducerMap<State> = {
-  teaCategories: fromTeaCategory.reducer
+  teaCategories: fromTeaCategory.reducer,
 };
 
-export const metaReducers: MetaReducer<State>[] = !environment.production ? [] : [];
+export const metaReducers: MetaReducer<State>[] = !environment.production
+  ? []
+  : [];

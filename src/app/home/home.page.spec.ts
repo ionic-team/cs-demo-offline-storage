@@ -18,8 +18,12 @@ describe('HomePage', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: NavController, useFactory: createNavControllerMock },
-        provideMockStore<State>({ initialState: { teaCategories: { loading: false, ids: [], entities: {} } } })
-      ]
+        provideMockStore<State>({
+          initialState: {
+            teaCategories: { loading: false, ids: [], entities: {} },
+          },
+        }),
+      ],
     }).compileComponents();
   }));
 
