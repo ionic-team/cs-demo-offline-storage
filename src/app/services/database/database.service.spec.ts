@@ -10,8 +10,8 @@ import { SQLite } from '@ionic-enterprise/offline-storage/ngx';
 import { Platform } from '@ionic/angular';
 
 describe('DatabaseService', () => {
-  let sqlite;
-  let dbHandle;
+  let sqlite: any;
+  let dbHandle: any;
 
   beforeEach(() => {
     sqlite = createSQLiteMock();
@@ -26,14 +26,14 @@ describe('DatabaseService', () => {
   });
 
   it('should be created', () => {
-    const service: DatabaseService = TestBed.get(DatabaseService);
+    const service: DatabaseService = TestBed.inject(DatabaseService);
     expect(service).toBeTruthy();
   });
 
   describe('when ready', () => {
     let service: DatabaseService;
     beforeEach(() => {
-      service = TestBed.get(DatabaseService);
+      service = TestBed.inject(DatabaseService);
     });
 
     it('has a handle for the database', async () => {

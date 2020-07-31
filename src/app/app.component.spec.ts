@@ -39,9 +39,9 @@ describe('AppComponent', () => {
   });
 
   describe('initialization', () => {
-    let platform;
+    let platform: Platform;
     beforeEach(() => {
-      platform = TestBed.get(Platform);
+      platform = TestBed.inject(Platform);
     });
 
     it('waits for the platform to be read', () => {
@@ -50,7 +50,7 @@ describe('AppComponent', () => {
     });
 
     it('hides the splash screen', async () => {
-      const splashScreen = TestBed.get(SplashScreen);
+      const splashScreen = TestBed.inject(SplashScreen);
       TestBed.createComponent(AppComponent);
       expect(splashScreen.hide).not.toHaveBeenCalled();
       await platform.ready();
@@ -58,7 +58,7 @@ describe('AppComponent', () => {
     });
 
     it('sets the proper status bar style', async () => {
-      const statusBar = TestBed.get(StatusBar);
+      const statusBar = TestBed.inject(StatusBar);
       TestBed.createComponent(AppComponent);
       expect(statusBar.styleDefault).not.toHaveBeenCalled();
       await platform.ready();
@@ -66,7 +66,7 @@ describe('AppComponent', () => {
     });
 
     it('dispatches loading of the tea categories', async () => {
-      const store = TestBed.get(Store);
+      const store = TestBed.inject(Store);
       spyOn(store, 'dispatch');
       TestBed.createComponent(AppComponent);
       expect(store.dispatch).not.toHaveBeenCalled();

@@ -14,7 +14,7 @@ describe('TeaCategoriesService', () => {
   );
 
   it('should be created', () => {
-    const service: TeaCategoriesService = TestBed.get(TeaCategoriesService);
+    const service: TeaCategoriesService = TestBed.inject(TeaCategoriesService);
     expect(service).toBeTruthy();
   });
 });

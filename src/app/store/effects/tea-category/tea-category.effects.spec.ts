@@ -25,7 +25,7 @@ describe('tea category effects', () => {
       ],
     });
 
-    effects = TestBed.get<TeaCategoryEffects>(TeaCategoryEffects);
+    effects = TestBed.inject<TeaCategoryEffects>(TeaCategoryEffects);
   });
 
   it('exists', () => {
@@ -34,14 +34,14 @@ describe('tea category effects', () => {
 
   describe('load$', () => {
     it('gets all of the tea categories', () => {
-      const service = TestBed.get(TeaCategoriesService);
+      const service = TestBed.inject(TeaCategoriesService);
       actions$ = of(teaCategoryActions.load());
       effects.load$.subscribe(() => {});
       expect(service.getAll).toHaveBeenCalledTimes(1);
     });
 
     it('only does this for the load action', () => {
-      const service = TestBed.get(TeaCategoriesService);
+      const service = TestBed.inject(TeaCategoriesService);
       actions$ = of(
         teaCategoryActions.create({
           teaCategory: { id: 1, name: 'name', description: 'descr' },
@@ -52,8 +52,8 @@ describe('tea category effects', () => {
     });
 
     it('passes the tea catgories on to the load success', done => {
-      const service = TestBed.get(TeaCategoriesService);
-      service.getAll.and.returnValue(
+      const service = TestBed.inject(TeaCategoriesService);
+      (service.getAll as any).and.returnValue(
         Promise.resolve([
           { id: 1, name: 'first', description: 'the first type' },
           { id: 2, name: 'second', description: 'the second type' },
@@ -76,8 +76,8 @@ describe('tea category effects', () => {
     });
 
     it('handles errors', done => {
-      const service = TestBed.get(TeaCategoriesService);
-      service.getAll.and.returnValue(
+      const service = TestBed.inject(TeaCategoriesService);
+      (service.getAll as any).and.returnValue(
         Promise.reject(new Error('I am a failure')),
       );
       actions$ = of(teaCategoryActions.load());
@@ -94,7 +94,7 @@ describe('tea category effects', () => {
 
   describe('create$', () => {
     it('saves the tea category', () => {
-      const service = TestBed.get(TeaCategoriesService);
+      const service = TestBed.inject(TeaCategoriesService);
       actions$ = of(
         teaCategoryActions.create({
           teaCategory: {
@@ -112,15 +112,15 @@ describe('tea category effects', () => {
     });
 
     it('only does this for the create action', () => {
-      const service = TestBed.get(TeaCategoriesService);
+      const service = TestBed.inject(TeaCategoriesService);
       actions$ = of(teaCategoryActions.load());
       effects.create$.subscribe(() => {});
       expect(service.save).not.toHaveBeenCalled();
     });
 
     it('passes the returned tea catgory on to the create success', done => {
-      const service = TestBed.get(TeaCategoriesService);
-      service.save.and.returnValue(
+      const service = TestBed.inject(TeaCategoriesService);
+      (service.save as any).and.returnValue(
         Promise.resolve({
           id: 42,
           name: 'I am new here',
@@ -150,8 +150,10 @@ describe('tea category effects', () => {
     });
 
     it('handles errors', done => {
-      const service = TestBed.get(TeaCategoriesService);
-      service.save.and.returnValue(Promise.reject(new Error('I am a failure')));
+      const service = TestBed.inject(TeaCategoriesService);
+      (service.save as any).and.returnValue(
+        Promise.reject(new Error('I am a failure')),
+      );
       actions$ = of(
         teaCategoryActions.create({
           teaCategory: {
@@ -173,7 +175,7 @@ describe('tea category effects', () => {
 
   describe('update$', () => {
     it('saves the tea category', () => {
-      const service = TestBed.get(TeaCategoriesService);
+      const service = TestBed.inject(TeaCategoriesService);
       actions$ = of(
         teaCategoryActions.update({
           teaCategory: {
@@ -193,15 +195,15 @@ describe('tea category effects', () => {
     });
 
     it('only does this for the update action', () => {
-      const service = TestBed.get(TeaCategoriesService);
+      const service = TestBed.inject(TeaCategoriesService);
       actions$ = of(teaCategoryActions.load());
       effects.update$.subscribe(() => {});
       expect(service.save).not.toHaveBeenCalled();
     });
 
     it('passes the tea catgory on to the update success', done => {
-      const service = TestBed.get(TeaCategoriesService);
-      service.save.and.returnValue(
+      const service = TestBed.inject(TeaCategoriesService);
+      (service.save as any).and.returnValue(
         Promise.resolve({
           id: 42,
           name: 'I am a changed tea',
@@ -232,8 +234,10 @@ describe('tea category effects', () => {
     });
 
     it('handles errors', done => {
-      const service = TestBed.get(TeaCategoriesService);
-      service.save.and.returnValue(Promise.reject(new Error('I am a failure')));
+      const service = TestBed.inject(TeaCategoriesService);
+      (service.save as any).and.returnValue(
+        Promise.reject(new Error('I am a failure')),
+      );
       actions$ = of(
         teaCategoryActions.update({
           teaCategory: {
@@ -256,7 +260,7 @@ describe('tea category effects', () => {
 
   describe('delete$', () => {
     it('deletes the tea category', () => {
-      const service = TestBed.get(TeaCategoriesService);
+      const service = TestBed.inject(TeaCategoriesService);
       actions$ = of(
         teaCategoryActions.remove({
           teaCategory: {
@@ -272,7 +276,7 @@ describe('tea category effects', () => {
     });
 
     it('only does this for the delete action', () => {
-      const service = TestBed.get(TeaCategoriesService);
+      const service = TestBed.inject(TeaCategoriesService);
       actions$ = of(teaCategoryActions.load());
       effects.delete$.subscribe(() => {});
       expect(service.delete).not.toHaveBeenCalled();
@@ -303,8 +307,8 @@ describe('tea category effects', () => {
     });
 
     it('handles errors', done => {
-      const service = TestBed.get(TeaCategoriesService);
-      service.delete.and.returnValue(
+      const service = TestBed.inject(TeaCategoriesService);
+      (service.delete as any).and.returnValue(
         Promise.reject(new Error('I am a failure')),
       );
       actions$ = of(
