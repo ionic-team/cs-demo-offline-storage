@@ -6,8 +6,6 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { SQLite } from '@ionic-enterprise/offline-storage/ngx';
 
 import { AppComponent } from './app.component';
@@ -32,9 +30,7 @@ import { TeaCategoryEffects } from '@app/store/effects';
     EffectsModule.forRoot([TeaCategoryEffects]),
   ],
   providers: [
-    SplashScreen,
     SQLite,
-    StatusBar,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
   bootstrap: [AppComponent],

@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { Plugins, StatusBarStyle } from '@capacitor/core';
 
 import { Platform } from '@ionic/angular';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { State } from './store/reducers';
 import { load as loadTeaCategories } from './store/actions/tea-category.actions';
 
@@ -12,20 +11,16 @@ import { load as loadTeaCategories } from './store/actions/tea-category.actions'
   templateUrl: 'app.component.html',
 })
 export class AppComponent {
-  constructor(
-    private platform: Platform,
-    private splashScreen: SplashScreen,
-    private statusBar: StatusBar,
-    private store: Store<State>,
-  ) {
+  constructor(private platform: Platform, private store: Store<State>) {
     this.initializeApp();
   }
 
   initializeApp() {
-    this.platform.ready().then(() => {
-      this.statusBar.styleDefault();
-      this.splashScreen.hide();
-      this.store.dispatch(loadTeaCategories());
-    });
+    if (this.platform.is('hybrid')) {
+      const { SplashScreen, StatusBar } = Plugins;
+      StatusBar.setStyle({ style: StatusBarStyle.Light });
+      SplashScreen.hide();
+    }
+    this.store.dispatch(loadTeaCategories());
   }
 }
